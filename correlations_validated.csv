@@ -1,0 +1,32 @@
+Variables	Correl	Description
+Village_clean	B3_FCS	Some villages (HeloKaliyo, Hoodley and Qooqane) have particularly low FCS scores
+A10_children	B3_FCS	Globally, the more there are children in the household, the lower is the FCS score
+A12_disp_stat	B13_MAHFP	Host have higher MAHFP score 
+A12_disp_stat	C2_Acresowned	host communities own also less hectares than returnees and refugees
+A16_Employ_Stat	B3_FCS	unemployed people have a lower FCS score
+A16_Employ_Stat	F8_water_treatment_used	unemployed are using are more likely to treat their water
+B1_MealAdults	D3_LH_income	The higher the LH income (D3) the more meals the day before
+C2_Acresowned	D17	For those having few acres, the main challenge for accessing market are insecurity and roads, and for those having the more acres, it is Not enough goods
+B1_MealsChildren	A10_boys	The more there are boys children in the HH the less children have meals per day
+B1_MealsChildren	B1_MealAdults	Most of the time (95%) children are eating more or as many meals as adults
+B1_MealsChildren	B3_FCS	The highest the FCS Score the more children have meals per day
+B1_MealsChildren	B13_MAHFP	The highest the MAHFP Score the more children have meals per day
+B1_MealsChildren	D3_LH_income	The highest the income (D3) the more children have meals per day
+C20_freq_irrig_day	F3_Distance_Water_min	The further the water point the less frequently people irrigate, 
+C20_freq_irrig_day	C20_WaterAccess	people irrigate more often when they have acces to pipes from the canal
+C22_receive_foodstoragecontainer	H2_important_why	Those who received food storage container respond less often that they wash their hands to be clean than those who did not : (45 % vs 8%)
+C22_receive_foodstoragecontainer	H3_wash_with_what	They are also less likely to wash their hand with water only (62 % vs 22%)
+C23_access_food_increased	D15_Nearest_Market_km	Those who say their access to food has increased are generally closer from the nearest market
+C23_access_food_increased	B2_HDDS	They have a higher HDDS score 
+D13_Training_animal_husband	H3_wash_with_what	Those having received training on animal husbandry are more likely to wash their hands with soap (55 % vs 7%) and less likely with water only (23 % vs 43%)
+D16_transport_means	B3_FCS	Those using donkey cart have much higher FCS score (median of 44 compared to 22 for cars and 20 for « Other »)
+D16_transport_means	F3_Distance_Water_min	Those answering « Other » have access to water much further in term of time than the others
+D22_LH_Changed	F1_MainSource_Drink	Those who answered that their livelihood has changed are mainly those who access water from surface water (70 % vs 30%)
+D29_training_rehabRoads	B2_HDDS	those having been involved in the training for rehabilitation of roads have a lower HDDS score
+E1_WaterTreattraining	F8_water_treatment_used	"Those who attended water tratment training are more likely not to treat water… (so either it was well targeted or it was not very efficient…)
+"
+E1_WaterTreattraining	H3_wash_with_what	Those who attended water tratment training are more likely to only wash their hands with water… (so either it was well targeted or it was not very efficient…)
+F1_MainSource_Drink	B3_FCS	Those who answer public tap/standpipe have a higher FCS score
+F3_Distance_Water_min	H2_important_why	The longer it take the more people are likely to answer that washing their hands reduces the spread of diseases.
+F8_water_treatment_used	H3_wash_with_what	Those using none are mainly washing their hands with water only and those using aquatabs are mainly washing their hands with soap for boiling and chlorination it is mainly ash or sand
+B3_FCS	C20_freq_irrig	Those who irrigate their farms everyday have a much higher FCS score
