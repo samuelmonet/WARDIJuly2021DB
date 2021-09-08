@@ -122,7 +122,7 @@ def main():
 					#st.write(df)
 					fig = px.box(df, x="Chall", y="Acres Owned",color='Challenge')
 					fig.update_layout(barmode='relative',xaxis={'title':'Challenges for accessing market'},\
-									yaxis_title='Acres owned',width=1500,height=800)
+									yaxis_title='Acres owned',width=1000,height=600)
 					st.plotly_chart(fig)
 					
 									
@@ -140,7 +140,7 @@ def main():
 							fig.update_traces(marker_color='green')
 							fig.update_layout(barmode='relative', \
         	          				xaxis={'title':questions[correlation]},\
-        	         				yaxis_title=questions[var],width=1500,height=800)
+        	         				yaxis_title=questions[var],width=1000,height=600)
 				
 						st.plotly_chart(fig)
 				
@@ -149,11 +149,10 @@ def main():
 							fig = px.box(df, x=var, y=correlation,points='all')
 							fig.update_traces(marker_color='green')
 							fig.update_layout(barmode='relative',xaxis={'title':questions[var]},\
-									yaxis_title=questions[correlation],width=1500,height=800)
+									yaxis_title=questions[correlation],width=1000,height=600)
 							st.plotly_chart(fig)
                  				
 						else:
-							col1, col2, col3 = st.beta_columns([4,1,4])
 							agg=df[[correlation,var]].groupby(by=[var,correlation]).aggregate({var:'count'}).unstack()
 							x=[i for i in agg.index]
 							fig = go.Figure(go.Bar(x=x, y=agg.iloc[:,0], name=agg.columns.tolist()[0][1],marker_color='green'))
@@ -174,8 +173,8 @@ def main():
         	          				xaxis={'title':questions[var]},\
         	          				yaxis={'title':'Pourcentages'}, legend_title_text=None)
 						
-							col1.plotly_chart(fig)
-							col3.plotly_chart(fig2)
+							st.plotly_chart(fig)
+							st.plotly_chart(fig2)
 						
 						
 						
