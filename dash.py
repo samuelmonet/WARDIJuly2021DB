@@ -104,11 +104,10 @@ def main():
 			
 			for correlation in correl[correl['Variables']==var]['Correl'].unique():
 				
-				st.title('Correlation between questions '+questions[var] +' and '+questions[correlation])
-				
-				st.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
-				
 				if correlation in specific:
+					st.title('Correlation between questions '+questions[var] +' and '+'D17 Challenges to acces the market')
+					st.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
+					
 					df=pd.DataFrame(columns=['Challenge','Acres Owned','Chall'])
 					dico={'D17_challenge_roads':'Roads','D17_challenge_Insecurity':'Insecurity',\
       					'D17_challenge_transpCost':'Transportation Costs','D17_challenge_distance':'Distance',\
@@ -128,6 +127,8 @@ def main():
 					
 									
 				else:
+					st.title('Correlation between questions '+questions[var] +' and '+questions[correlation])
+					st.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
 					df=data[[correlation,var]].copy()
 					
 					if var in continues:
