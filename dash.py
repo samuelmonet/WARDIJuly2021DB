@@ -37,6 +37,83 @@ data,correl,questions=load_data()
 #st.write(data.columns)
 #st.write(correl.shape)
 
+def sankey_graph(data,L,height=600,width=1600):
+    """ sankey graph de data pour les catégories dans L dans l'ordre et 
+    de hauter et longueur définie éventuellement"""
+    
+    nodes_colors=["blue","green","grey",'yellow',"coral"]
+    link_colors=["lightblue","lightgreen","lightgrey","lightyellow","lightcoral"]
+    
+    
+    labels=[]
+    source=[]
+    target=[]
+    
+    for cat in L:
+        lab=data[cat].unique().tolist()
+        lab.sort()
+        labels+=lab
+    
+    for i in range(len(data[L[0]].unique())): #j'itère sur mes premieres sources
+    
+        source+=[i for k in range(len(data[L[1]].unique()))] #j'envois sur ma catégorie 2
+        index=len(data[L[0]].unique())
+        target+=[k for k in range(index,len(data[L[1]].unique())+index)]
+        
+        for n in range(1,len(L)-1):
+        
+            source+=[index+k for k in range(len(data[L[n]].unique())) for j in range(len(data[L[n+1]].unique()))]
+            index+=len(data[L[n]].unique())
+            target+=[index+k for j in range(len(data[L[n]].unique())) for k in range(len(data[L[n+1]].unique()))]
+       
+    iteration=int(len(source)/len(data[L[0]].unique()))
+    value_prov=[(int(i//iteration),source[i],target[i]) for i in range(len(source))]
+    
+    
+    value=[]
+    k=0
+    position=[]
+    for i in L:
+        k+=len(data[i].unique())
+        position.append(k)
+    
+   
+    
+    for triplet in value_prov:    
+        k=0
+        while triplet[1]>=position[k]:
+            k+=1
+        
+        df=data[data[L[0]]==labels[triplet[0]]].copy()
+        df=df[df[L[k]]==labels[triplet[1]]]
+        #Je sélectionne ma première catégorie
+        value.append(len(df[df[L[k+1]]==labels[triplet[2]]]))
+        
+    color_nodes=nodes_colors[:len(data[L[0]].unique())]+["black" for i in range(len(labels)-len(data[L[0]].unique()))]
+    print(color_nodes)
+    color_links=[]
+    for i in range(len(L)):
+    	color_links+=[link_colors[i] for couleur in range(iteration)]
+    print(color_links)
+   
+   
+    fig = go.Figure(data=[go.Sankey(
+    node = dict(
+      pad = 15,
+      thickness = 30,
+      line = dict(color = "black", width = 1),
+      label = [i.upper() for i in labels],
+      color=color_nodes
+      )
+      
+    ,
+    link = dict(
+      source = source, # indices correspond to labels, eg A1, A2, A1, B1, ...
+      target = target,
+      value = value,
+      color = color_links))])
+    return fig
+
 
 
 continues=['C2_Acresowned','A10_boys','A15_income','D3_LH_income','D15_Nearest_Market_km',\
@@ -212,11 +289,11 @@ def main():
 		
 		wc.generate(corpus)
 		
-		col1.image(wc.to_array(),width=600,heigth=300)	
+		col1.image(wc.to_array(),width=400,heigth=200)	
 		
 		if col1.checkbox('Would you like to filter Wordcloud according to other questions'):
 		
-			feature2=st.selectbox('Select one question to filter the wordcloud (Select on of the last ones for checking some new tools)',[questions[i] for i in data.columns if \
+			feature2=st.selectbox('Select one question to filter the wordcloud (Select one of the last ones for checking some new tools)',[questions[i] for i in data.columns if \
 			i!='FCS Score' and (i in continues or len(data[i].unique())<=8)])
 			var2=[i for i in questions if questions[i]==feature2][0]
 			
@@ -245,9 +322,9 @@ def main():
 				wc2 = WordCloud(background_color="white", repeat=False, mask=mask)
 				wc2.generate(corpus2)
 				subcol1.write('Response under the threshold')
-				subcol1.image(wc1.to_array(),width=600,heigth=300)
+				subcol1.image(wc1.to_array(),width=400,heigth=200)
 				subcol2.write('Response over the threshold')
-				subcol2.image(wc2.to_array(),width=600,heigth=300)
+				subcol2.image(wc2.to_array(),width=400,heigth=200)
 			else:
 				subcol1,subcol2=st.beta_columns([2,2])
 				L=data[var2].unique()
@@ -269,18 +346,95 @@ def main():
 					wc2.generate(Corpuses[i])
 					if i%2==0:
 						subcol1.write('Response : '+str(L[i])+' '+str(len(data[data[var2]==L[i]]))+' '+'repondent')
-						subcol1.image(wc2.to_array(),width=600,heigth=300)
+						subcol1.image(wc2.to_array(),width=400,heigth=200)
 					else:
 						subcol2.write('Response : '+str(L[i])+' '+str(len(data[data[var2]==L[i]]))+' '+'repondent')
-						subcol2.image(wc2.to_array(),width=600,heigth=300)
+						subcol2.image(wc2.to_array(),width=400,heigth=200)
 			
+	elif topic=='Display Sankey Graphs':
+	
+		st.title('Visuals for questions related to cultures (questions C3 to C17)')
+		st.title('')
+				
 			
+		sankey=[i for i in data.columns if i[0]=='C' and 'C1_' not in i and 'C2_' not in i and i!='Clan']
+		sankeyseeds=sankey[:65]
+		sank=data[sankeyseeds]
+		bean=sank[[i for i in sank.columns if 'Bean' in i]].copy()
+		sesame=sank[[i for i in sank.columns if 'Sesame' in i]].copy()
+		cowpea=sank[[i for i in sank.columns if 'Cowpea' in i]].copy()
+		maize=sank[[i for i in sank.columns if 'Maize' in i]].copy()
+		other=sank[[i for i in sank.columns if 'Other' in i]].copy()
+		colonnes=['Seeds Planted','Type of seeds','Origin of seeds','Area cultivated','Did you have enough seed',\
+          'Did you face pest attack','Area affected','Have you done pest management','Origin of fertilizer',\
+          'Fertilizer from Wardi','Applied good practices','Used irrigation','Area irrigated']
+		for i in [bean,sesame,cowpea,maize,other]:
+    			i.columns=colonnes
+		bean=bean[bean['Seeds Planted']=='Yes']
+		sesame=sesame[sesame['Seeds Planted']=='Yes']
+		cowpea=cowpea[cowpea['Seeds Planted']=='Yes']
+		maize=maize[maize['Seeds Planted']=='Yes']
+		other=other[other['Seeds Planted']=='Yes']
+		
+		bean['Seeds Planted']=bean['Seeds Planted'].apply(lambda x: 'Beans')
+		sesame['Seeds Planted']=sesame['Seeds Planted'].apply(lambda x: 'Sesame')
+		cowpea['Seeds Planted']=cowpea['Seeds Planted'].apply(lambda x: 'Cowpeas')
+		maize['Seeds Planted']=maize['Seeds Planted'].apply(lambda x: 'Maize')
+		other['Seeds Planted']=other['Seeds Planted'].apply(lambda x: 'Other')
+		
+		sank=pd.DataFrame(columns=colonnes)
+		for i in [bean,sesame,cowpea,maize,other]:
+		    sank=sank.append(i)
+		sank['ones']=np.ones(len(sank))
+		
+		
+		
+		
+		st.title('Some examples')
+		
+		st.write('Seeds planted - Origin of Seeds - Type of Seeds - Area Cultivated - Did you have enough seeds?')
+		fig=sankey_graph(sank,['Seeds Planted','Origin of seeds','Type of seeds','Area cultivated','Did you have enough seed'],height=600,width=1500)
+		fig.update_layout(plot_bgcolor='black', paper_bgcolor='grey', width=1500)
+		
+		st.plotly_chart(fig)
+		
+		st.write('Origin of fertilizer - Did you face pest attack - Applied good practices - Seeds Planted')
+		fig1=sankey_graph(sank,['Origin of fertilizer','Did you face pest attack','Applied good practices','Seeds Planted'],height=600,width=1500)
+		fig1.update_layout(plot_bgcolor='black', paper_bgcolor='grey', width=1500)
+		
+		st.plotly_chart(fig1)
+		
+		st.write('Area Cultivated - Type of Seeds - Did you face pest attack - Area affected')
+		fig2=sankey_graph(sank,['Area cultivated','Type of seeds','Did you face pest attack','Area affected'],height=600,width=1500)
+		fig2.update_layout(plot_bgcolor='black', paper_bgcolor='grey', width=1500)
+		
+		st.plotly_chart(fig2)
+		
+		if st.checkbox('Design my own Sankey Graph'):
 			
+			feats=st.multiselect('Select features you want to see in the order you want them to appear', colonnes)
+			
+			if len(feats)>=2:
+				st.write(' - '.join(feats))
+				fig3=sankey_graph(sank,feats,height=600,width=1500)
+				fig3.update_layout(plot_bgcolor='black', paper_bgcolor='grey', width=1500)
+				st.plotly_chart(fig3)
+		
+		
+		
+			
+	
+	
 	else:
 		st.title('\t WARDI \t July 2021')	
-		
 
 
+    
+ 
 if __name__== '__main__':
     main()
+
+
+
+
     
