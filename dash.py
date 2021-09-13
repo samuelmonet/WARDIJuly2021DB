@@ -91,12 +91,12 @@ def sankey_graph(data,L,height=600,width=1600):
         value.append(len(df[df[L[k+1]]==labels[triplet[2]]]))
         
     color_nodes=nodes_colors[:len(data[L[0]].unique())]+["black" for i in range(len(labels)-len(data[L[0]].unique()))]
-    print(color_nodes)
+    #print(color_nodes)
     color_links=[]
     for i in range(len(data[L[0]].unique())):
     	color_links+=[link_colors[i] for couleur in range(iteration)]
-    print(L,len(L),iteration)
-    print(color_links)
+    #print(L,len(L),iteration)
+    #print(color_links)
    
    
     fig = go.Figure(data=[go.Sankey(
