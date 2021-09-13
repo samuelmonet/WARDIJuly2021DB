@@ -10,6 +10,7 @@ import pickle
 import pydeck as pdk
 import re
 from collections import Counter
+from PIL import Image
 
 #import variables
 
@@ -92,8 +93,9 @@ def sankey_graph(data,L,height=600,width=1600):
     color_nodes=nodes_colors[:len(data[L[0]].unique())]+["black" for i in range(len(labels)-len(data[L[0]].unique()))]
     print(color_nodes)
     color_links=[]
-    for i in range(len(L)):
+    for i in range(len(data[L[0]].unique())):
     	color_links+=[link_colors[i] for couleur in range(iteration)]
+    print(L,len(L),iteration)
     print(color_links)
    
    
@@ -120,10 +122,17 @@ continues=['C2_Acresowned','A10_boys','A15_income','D3_LH_income','D15_Nearest_M
 'F3_Distance_Water_km','F3_Distance_Water_min','B3_FCS','B13_MAHFP','B2_HDDS']
 specific=['D17']
 
+img1 = Image.open("logoAxiom.jpeg")
+img2 = Image.open("logoWardi.png")
 
 def main():	
 	
-	topic = st.sidebar.selectbox('What do you want to do ?',['Nothing','Display correlations','Display Wordclouds','Display Sankey Graphs','Design my own visuals'])
+	st.sidebar.image(img1,width=200)
+	topic = st.sidebar.radio('What do you want to do ?',('Display correlations','Display Wordclouds','Display Sankey Graphs','Design my own visuals'))
+	
+	title1, title2 = st.beta_columns([5,1])
+	title2.image(img2)
+	
 	
 	if topic=='Display correlations':
 	
