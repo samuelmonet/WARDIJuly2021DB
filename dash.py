@@ -339,7 +339,7 @@ def main():
 		
 		wc.generate(corpus)
 		
-		col1.image(wc.to_array(),width=600)	
+		col1.image(wc.to_array(),width=400)	
 		
 		if col1.checkbox('Would you like to filter Wordcloud according to other questions'):
 			
@@ -374,9 +374,9 @@ def main():
 				wc2 = WordCloud(background_color="#0E1117", repeat=False, mask=mask)
 				wc2.generate(corpus2)
 				subcol1.write('Response under the threshold')
-				subcol1.image(wc1.to_array(),width=600)
+				subcol1.image(wc1.to_array(),width=400)
 				subcol2.write('Response over the threshold')
-				subcol2.image(wc2.to_array(),width=600)
+				subcol2.image(wc2.to_array(),width=400)
 			else:
 				subcol1,subcol2=st.columns([2,2])
 				L=data[var2].unique()
@@ -398,10 +398,10 @@ def main():
 					wc2.generate(Corpuses[i])
 					if i%2==0:
 						subcol1.write('Response : '+str(L[i])+' '+str(len(data[data[var2]==L[i]]))+' '+'repondent')
-						subcol1.image(wc2.to_array(),width=600)
+						subcol1.image(wc2.to_array(),width=400)
 					else:
 						subcol2.write('Response : '+str(L[i])+' '+str(len(data[data[var2]==L[i]]))+' '+'repondent')
-						subcol2.image(wc2.to_array(),width=600)
+						subcol2.image(wc2.to_array(),width=400)
 			
 	elif topic=='Display Sankey Graphs':
 	
