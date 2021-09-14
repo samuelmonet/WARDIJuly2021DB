@@ -122,31 +122,35 @@ continues=['C2_Acresowned','A10_boys','A15_income','D3_LH_income','D15_Nearest_M
 'F3_Distance_Water_km','F3_Distance_Water_min','B3_FCS','B13_MAHFP','B2_HDDS']
 specific=['D17']
 
-img1 = Image.open("logoAxiom.jpeg")
+img1 = Image.open("logoAxiom.png")
 img2 = Image.open("logoWardi.png")
 
 def main():	
 	
 	st.sidebar.image(img1,width=200)
+	st.sidebar.title("")
+	st.sidebar.title("")
 	topic = st.sidebar.radio('What do you want to do ?',('Display correlations','Display Wordclouds','Display Sankey Graphs','Design my own visuals'))
 	
-	title1, title2 = st.beta_columns([5,1])
-	title2.image(img2)
+	title1, title2,title3 = st.columns([2,5,2])
+	title3.image(img2)
 	
 	
 	if topic=='Display correlations':
 	
+		title2.title('Correlations uncovered from the database')
 		
 		for var in [i for i in correl['Variables'].unique()]:
 		
-			
-		
 			if var=='Village_clean':
-		
-				st.title('Correlations related to the village of the respondent')
+				
+				
+				st.header('Village of the respondent')
 					
 				st.write('FCS scores is very different from one village to another')
-		
+				
+				col1, col2, col3 = st.columns([4,1,4])
+				
 				df=data[['Village_clean','longitude','latitude','FCS Score']]
 				a=df.groupby(['Village_clean','FCS Score']).aggregate({'longitude':'count'}).unstack()
 				a.columns=['Acceptable','Borderline','Poor']
@@ -154,8 +158,8 @@ def main():
 				df=a.merge(b,how='left',left_index=True,right_index=True).fillna(0)
 				df['village']=df.index
 				
-				st.pydeck_chart(pdk.Deck(map_style='mapbox://styles/mapbox/light-v9',\
-				initial_view_state=pdk.ViewState(latitude=4.55,longitude=45.35,zoom=10,pitch=50,),\
+				col1.pydeck_chart(pdk.Deck(map_style='mapbox://styles/mapbox/light-v9',\
+				initial_view_state=pdk.ViewState(latitude=4.55,longitude=45.35,zoom=10,pitch=50,height=900),\
 				layers=[pdk.Layer('ColumnLayer',data=df,get_position=['longitude','latitude'],get_elevation='Acceptable+Borderline+Poor',\
 				elevation_scale=400,pickable=True,auto_highlight=True,get_fill_color=[255, 0, 0],radius=300),\
 				pdk.Layer('ColumnLayer',data=df,get_position=['longitude','latitude'],get_elevation='Borderline+Poor',\
@@ -166,8 +170,7 @@ def main():
 				get_text="village",get_label_size=200,get_label_color=[0,0,0],line_width_min_pixels=1,)
 				],\
 				))
-				st.write('PS: Position of villages is not the real one as I did not have the GPS coordinates for the benficiaries. This was just to show what could be done')
-				col1, col2, col3 = st.beta_columns([4,1,4])
+								
 				x=df['village']
 				fig = go.Figure(go.Bar(x=x, y=df['Poor'], name='Poor',marker_color='red'))
 				fig.add_trace(go.Bar(x=x, y=df['Borderline'], name='Borderline',marker_color='yellow'))
@@ -175,7 +178,7 @@ def main():
 				fig.update_layout(barmode='relative', \
 	        	          xaxis={'title':'Village'},\
         		          yaxis={'title':'Persons'}, legend_title_text='FCS Score')
-				col1.plotly_chart(fig)
+				col3.plotly_chart(fig)
 				somme=df['Poor']+df['Borderline']+df['Acceptable']
 				fig2 = go.Figure(go.Bar(x=x, y=df['Poor']/somme, name='Poor',marker_color='red'))
 				fig2.add_trace(go.Bar(x=x, y=df['Borderline']/somme, name='Borderline',marker_color='yellow'))
@@ -185,16 +188,22 @@ def main():
         		          yaxis={'title':'Pourcentage'}, legend_title_text='FCS Score')
 				col3.plotly_chart(fig2)
 		
-		
+				st.write('PS: Position of villages is not the real one as I did not have the GPS coordinates for the benficiaries. This was just to show what could be done')
 		
 		
 			else:
-				st.title('Correlation with question '+questions[var])
-			
-				for correlation in correl[correl['Variables']==var]['Correl'].unique():
 				
+				st.markdown("""---""")
+				
+				st.header(questions[var])
+							
+				k=0
+				
+				for correlation in correl[correl['Variables']==var]['Correl'].unique():
+					
+					
+					
 					if correlation in specific:
-						st.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
 						
 						df=pd.DataFrame(columns=['Challenge','Acres Owned','Chall'])
 						dico={'D17_challenge_roads':'Roads','D17_challenge_Insecurity':'Insecurity',\
@@ -210,11 +219,21 @@ def main():
 						#st.write(df)
 						fig = px.box(df, x="Chall", y="Acres Owned",color='Challenge')
 						fig.update_layout(barmode='relative',xaxis={'title':'Challenges for accessing market'},\
-										yaxis_title='Acres owned',width=1000,height=600)
-						st.plotly_chart(fig)
+										yaxis_title='Acres owned',width=800,height=450)
+						if k%2==0:
+							col1, col2, col3 = st.columns([4,1,4])
+							
+							col1.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
+							col1.plotly_chart(fig)
+						else:
+							
+							col3.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
+							col3.plotly_chart(fig)
+						
+						k+=1
 						
 					else:
-						st.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
+						
 						df=data[[correlation,var]].copy()
 					
 						if var in continues:
@@ -227,17 +246,35 @@ def main():
 								fig.update_traces(marker_color='green')
 								fig.update_layout(barmode='relative', \
         	        	  				xaxis={'title':questions[correlation]},\
-        	        	 				yaxis_title=questions[var],width=1000,height=600)
-				
-							st.plotly_chart(fig)
-				
+        	        	 				yaxis_title=questions[var],width=800,height=450)
+							
+							if k%2==0:
+								col1, col2, col3 = st.columns([4,1,4])
+								
+								col1.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
+								col1.plotly_chart(fig)
+							else:
+								
+								col3.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
+								col3.plotly_chart(fig)
+							k+=1
+							
 						else:
 							if correlation in continues:
 								fig = px.box(df, x=var, y=correlation,points='all')
 								fig.update_traces(marker_color='green')
 								fig.update_layout(barmode='relative',xaxis={'title':questions[var]},\
-										yaxis_title=questions[correlation],width=1000,height=600)
-								st.plotly_chart(fig)
+										yaxis_title=questions[correlation],width=800,height=450)
+								if k%2==0:
+									col1, col2, col3 = st.columns([4,1,4])
+									
+									col1.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
+									col1.plotly_chart(fig)
+								else:
+									
+									col3.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
+									col3.plotly_chart(fig)
+								k+=1
                  				
 							else:
 								agg=df[[correlation,var]].groupby(by=[var,correlation]).aggregate({var:'count'}).unstack()
@@ -259,20 +296,24 @@ def main():
 								fig2.update_layout(barmode='relative', \
         	        	  				xaxis={'title':questions[var]},\
         	        	  				yaxis={'title':'Pourcentages'}, legend_title_text=None)
-						
-								st.plotly_chart(fig)
-								st.plotly_chart(fig2)
-						
+								
+								st.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
+								
+								col1, col2, col3 = st.columns([4,1,4])
+								
+								col1.plotly_chart(fig)
+								col3.plotly_chart(fig2)
+								k=0
 						
 						
 	elif topic=='Display Wordclouds':
-		#st.write('coucou')
+		title2.title('Wordclouds for open questions')
 		df=data[[i for i in data.columns if 'text' in i]].copy()
 		#st.write(df)
 		feature=st.sidebar.selectbox('Select the question for which you would like to visualize wordclouds of answers',[questions[i] for i in df.columns])	
 		var=[i for i in questions if questions[i]==feature][0]
 		
-		col1, col3 = st.beta_columns([6,3])
+		col1, col3 = st.columns([6,3])
 		col1.title('Wordcloud from question:')
 		col1.title(feature)
 				
@@ -294,21 +335,23 @@ def main():
 		else:
 			corpus=' '.join([i for i in corpus.split(' ') if i not in sw])
 		
-		wc = WordCloud(background_color="white", repeat=False, mask=mask)
+		wc = WordCloud(background_color="#0E1117", repeat=False, mask=mask)
 		
 		wc.generate(corpus)
 		
-		col1.image(wc.to_array(),width=400,heigth=200)	
+		col1.image(wc.to_array(),width=600)	
 		
 		if col1.checkbox('Would you like to filter Wordcloud according to other questions'):
-		
+			
+			st.markdown("""---""")
+			
 			feature2=st.selectbox('Select one question to filter the wordcloud (Select one of the last ones for checking some new tools)',[questions[i] for i in data.columns if \
 			i!='FCS Score' and (i in continues or len(data[i].unique())<=8)])
 			var2=[i for i in questions if questions[i]==feature2][0]
 			
 			if var2 in continues:
 				threshold=st.slider('Select the threshold', min_value=data[var2].fillna(0).min(),max_value=data[var2].fillna(0).max())
-				subcol1,subcol2=st.beta_columns([2,2])	
+				subcol1,subcol2=st.columns([2,2])	
 				
 				corpus1=' '.join(data[data[var2]<threshold][var].apply(lambda x:'' if x=='0' else x))
 				corpus1=re.sub('[^A-Za-z ]',' ', corpus1)
@@ -318,7 +361,7 @@ def main():
     					corpus1='No_response'
 				else:
 					corpus1=' '.join([i for i in corpus.split(' ') if i not in sw])
-				wc1 = WordCloud(background_color="white", repeat=False, mask=mask)
+				wc1 = WordCloud(background_color="#0E1117", repeat=False, mask=mask)
 				wc1.generate(corpus1)
 				corpus2=' '.join(data[data[var2]>=threshold][var].apply(lambda x:'' if x=='0' else x))
 				corpus2=re.sub('[^A-Za-z ]',' ', corpus2)
@@ -328,14 +371,14 @@ def main():
     					corpus2='No_response'
 				else:
 					corpus2=' '.join([i for i in corpus.split(' ') if i not in sw])
-				wc2 = WordCloud(background_color="white", repeat=False, mask=mask)
+				wc2 = WordCloud(background_color="#0E1117", repeat=False, mask=mask)
 				wc2.generate(corpus2)
 				subcol1.write('Response under the threshold')
-				subcol1.image(wc1.to_array(),width=400,heigth=200)
+				subcol1.image(wc1.to_array(),width=600)
 				subcol2.write('Response over the threshold')
-				subcol2.image(wc2.to_array(),width=400,heigth=200)
+				subcol2.image(wc2.to_array(),width=600)
 			else:
-				subcol1,subcol2=st.beta_columns([2,2])
+				subcol1,subcol2=st.columns([2,2])
 				L=data[var2].unique()
 				
 				corpus1=corpus2=corpus3=corpus4=corpus5=corpus6=corpus7=corpus8=''
@@ -351,18 +394,18 @@ def main():
     						Corpuses[i]='No_response'
 					else:
 						Corpuses[i]=' '.join([i for i in Corpuses[i].split(' ') if i not in sw])
-					wc2 = WordCloud(background_color="white", repeat=False, mask=mask)
+					wc2 = WordCloud(background_color="#0E1117", repeat=False, mask=mask)
 					wc2.generate(Corpuses[i])
 					if i%2==0:
 						subcol1.write('Response : '+str(L[i])+' '+str(len(data[data[var2]==L[i]]))+' '+'repondent')
-						subcol1.image(wc2.to_array(),width=400,heigth=200)
+						subcol1.image(wc2.to_array(),width=600)
 					else:
 						subcol2.write('Response : '+str(L[i])+' '+str(len(data[data[var2]==L[i]]))+' '+'repondent')
-						subcol2.image(wc2.to_array(),width=400,heigth=200)
+						subcol2.image(wc2.to_array(),width=600)
 			
 	elif topic=='Display Sankey Graphs':
 	
-		st.title('Visuals for questions related to cultures (questions C3 to C17)')
+		title2.title('Visuals for questions related to cultures (questions C3 to C17)')
 		st.title('')
 				
 			
@@ -401,18 +444,21 @@ def main():
 		
 		st.title('Some examples')
 		
+		st.markdown("""---""")
 		st.write('Seeds planted - Origin of Seeds - Type of Seeds - Area Cultivated - Did you have enough seeds?')
 		fig=sankey_graph(sank,['Seeds Planted','Origin of seeds','Type of seeds','Area cultivated','Did you have enough seed'],height=600,width=1500)
 		fig.update_layout(plot_bgcolor='black', paper_bgcolor='grey', width=1500)
 		
 		st.plotly_chart(fig)
 		
+		st.markdown("""---""")
 		st.write('Origin of fertilizer - Did you face pest attack - Applied good practices - Seeds Planted')
 		fig1=sankey_graph(sank,['Origin of fertilizer','Did you face pest attack','Applied good practices','Seeds Planted'],height=600,width=1500)
 		fig1.update_layout(plot_bgcolor='black', paper_bgcolor='grey', width=1500)
 		
 		st.plotly_chart(fig1)
 		
+		st.markdown("""---""")
 		st.write('Area Cultivated - Type of Seeds - Did you face pest attack - Area affected')
 		fig2=sankey_graph(sank,['Area cultivated','Type of seeds','Did you face pest attack','Area affected'],height=600,width=1500)
 		fig2.update_layout(plot_bgcolor='black', paper_bgcolor='grey', width=1500)
@@ -421,6 +467,7 @@ def main():
 		
 		if st.checkbox('Design my own Sankey Graph'):
 			
+			st.markdown("""---""")
 			feats=st.multiselect('Select features you want to see in the order you want them to appear', colonnes)
 			
 			if len(feats)>=2:
