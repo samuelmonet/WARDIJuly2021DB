@@ -178,7 +178,7 @@ def main():
 				fig.update_layout(barmode='relative', \
 	        	          xaxis={'title':'Village'},\
         		          yaxis={'title':'Persons'}, legend_title_text='FCS Score')
-				col3.plotly_chart(fig)
+				col3.plotly_chart(fig,use_container_width=True)
 				somme=df['Poor']+df['Borderline']+df['Acceptable']
 				fig2 = go.Figure(go.Bar(x=x, y=df['Poor']/somme, name='Poor',marker_color='red'))
 				fig2.add_trace(go.Bar(x=x, y=df['Borderline']/somme, name='Borderline',marker_color='yellow'))
@@ -186,7 +186,7 @@ def main():
 				fig2.update_layout(barmode='relative', \
 	        	          xaxis={'title':'Village'},\
         		          yaxis={'title':'Pourcentage'}, legend_title_text='FCS Score')
-				col3.plotly_chart(fig2)
+				col3.plotly_chart(fig2,use_container_width=True)
 		
 				st.write('PS: Position of villages is not the real one as I did not have the GPS coordinates for the benficiaries. This was just to show what could be done')
 		
@@ -224,11 +224,11 @@ def main():
 							col1, col2, col3 = st.columns([4,1,4])
 							
 							col1.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
-							col1.plotly_chart(fig)
+							col1.plotly_chart(fig,use_container_width=True)
 						else:
 							
 							col3.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
-							col3.plotly_chart(fig)
+							col3.plotly_chart(fig,use_container_width=True)
 						
 						k+=1
 						
@@ -252,11 +252,11 @@ def main():
 								col1, col2, col3 = st.columns([4,1,4])
 								
 								col1.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
-								col1.plotly_chart(fig)
+								col1.plotly_chart(fig,use_container_width=True)
 							else:
 								
 								col3.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
-								col3.plotly_chart(fig)
+								col3.plotly_chart(fig,use_container_width=True)
 							k+=1
 							
 						else:
@@ -269,11 +269,11 @@ def main():
 									col1, col2, col3 = st.columns([4,1,4])
 									
 									col1.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
-									col1.plotly_chart(fig)
+									col1.plotly_chart(fig,use_container_width=True)
 								else:
 									
 									col3.write(correl[(correl['Variables']==var) & (correl['Correl']==correlation)]['Description'].iloc[0])
-									col3.plotly_chart(fig)
+									col3.plotly_chart(fig,use_container_width=True)
 								k+=1
                  				
 							else:
@@ -301,8 +301,8 @@ def main():
 								
 								col1, col2, col3 = st.columns([4,1,4])
 								
-								col1.plotly_chart(fig)
-								col3.plotly_chart(fig2)
+								col1.plotly_chart(fig,use_container_width=True)
+								col3.plotly_chart(fig2,use_container_width=True)
 								k=0
 						
 						
